@@ -1,0 +1,29 @@
+# Ignore all assets files
+assets/
+
+# If you want to commit the assets folder structure but not the files, uncomment the following lines:
+# assets/*
+# !assets/*/
+
+# If you want to be more specific about what to ignore within assets, you can use patterns like:
+# assets/**/*.txt
+# assets/Train/buggy_classes/
+
+# Python related ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# IDE related ignores
+.vscode/
+.idea/
+*.swp
+*.swo
