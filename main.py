@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # 日志文件夹
     parser.add_argument("--log_dir", type=str, default="D://Study//NPR&RL//ProjectV1//assets//log")
     # rl类型
-    parser.add_argument("--rl_type", type=str, default="grpo")
+    parser.add_argument("--rl_type", type=str, default="trl_grpo")
     # reward formula计算模型
     parser.add_argument("--reward_formula_model_dir_path", type=str, default="D://LLM//codebert-base")
     # 是否微调模型
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     model, tokenizer = model_config.load_model()
 
     # 加载数据
-    data_config = DataConfig(args.data_dir, tokenizer, args.is_test)
+    data_config = DataConfig(args.data_dir, model_config, args.is_test)
     dataset = data_config.load_dataset()
 
     # 加载rl模块

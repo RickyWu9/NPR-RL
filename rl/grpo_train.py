@@ -48,10 +48,10 @@ class GRPOTrainer:
                         output = self.model.generate(
                             input_ids = data["input_ids"], 
                             attention_mask = data["input_mask"],
-                            do_sample=False,
-                            top_p=0.95,
+                            do_sample=True,
+                            top_p=0.98,
                             temperature=1,
-                            max_new_tokens=32,
+                            max_new_tokens=256,
                             return_dict_in_generate=True,
                             output_scores=True
                         )
@@ -65,16 +65,6 @@ class GRPOTrainer:
                         scores = torch.stack(output.scores, dim=1).squeeze(1)  # (gen_len, vocab)
                         probs = torch.log_softmax(scores, dim=-1)
 
-                        if torch.isnan(probs).any() or torch.isinf(probs).any():
-                            #生成的样本包含nan或inf，跳过
-                            skip_sample_num += 1
-                            is_skip = True
-                            print(f"Epoch num:{epoch} total skip_sample_num: {skip_sample_num}")
-                            break;
-
-
-                        
-                        gen_probs = probs[torch.arange(probs.shape[0]), gen_ids[:probs.shape[0]]]
                         logprob = probs.sum().item()
                         logprobs.append(logprob)
 
@@ -151,10 +141,19 @@ class GRPOTrainer:
                         print(f"Epoch {epoch+1}/{self.epoch_num}, Sample {idx}/{len(self.dataset)}, Loss: {total_loss.item():.4f}, Reward: {avg_reward:.4f}")
                 
 
-
+    def sample(self, input_ids):
+        preds = self.generator_model.generate(
+            input_ids,
+            attention_mask=input_ids.ne(self.tokenizer.pad_token_id),
+            use_cache=True,
+            num_beams=5,
+            early_stopping=True,
+            max_length=256,
+            pad_token_id=self.tokenizer.pad_token_id)
 
 
 
     
     def save_model(self, file_name):
-        self.model.save_pretrained(os.path.join(self.log_path, file_name))
+        #self.model.save_pretrained(os.path.join(self.log_path, file_name))
+        pass

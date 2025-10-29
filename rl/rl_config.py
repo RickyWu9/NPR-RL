@@ -61,7 +61,7 @@ class RLConfig():
                 eps=1e-3,
                 lr=1e-6,
                 reward_formula_model_dir_path=self.reward_formula_model_dir_path,
-                log_path=self.log_dir
+                log_path=self.log_dir,
                 save_path=self.output_dir
             )
             

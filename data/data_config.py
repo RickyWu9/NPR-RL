@@ -1,14 +1,17 @@
-import os
+import sys, os
 import re
 from tqdm import tqdm
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from model.model_config import ModelConfig
 from data.rl_dataset import RLDataset
 from data.rl_data_process import read_file
 
 
 class DataConfig():
-    def __init__(self, data_dir, tokenizer, is_test, data_type="train", test_number=10):
+    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=10):
         self.data_dir = data_dir
-        self.tokenizer = tokenizer
+        self.model_name = model_config.model_name
+        self.tokenizer = model_config.tokenizer
         self.is_test = is_test 
         self.data_type = data_type
         self.test_number = test_number
@@ -58,40 +61,63 @@ class DataConfig():
                 # 判空
                 if(is_blank(bug_line) | is_blank(fix_line) | is_blank(bug_method)):
                     continue
-
-                bug_method_list = bug_method.split('\n')
-                for ind in range(len(bug_method_list)):
-                    if bug_line in bug_method_list[ind]:
-                        bug_method_list[ind] = " <BUGS> " + bug_line + " <BUGE> "
-                format_bug_method = '\n'.join(bug_method_list)
-                format_bug_method = re.sub(r'\s+', ' ', format_bug_method)
-                format_bug_method = format_bug_method.replace('</s>', '<unk>')
-
-                format_fix_line= re.sub(r'\s+', ' ', " <FIXS> " + fix_line.strip() + " <FIXE> ")
-                format_fix_line = format_fix_line.replace('</s>', '<unk>')
-                self.data.append(
-                    {   
-                        "idx":idx,
-                        "bug_method":format_bug_method.strip(),
-                        "bug_line":bug_line,
-                        "fix_line":format_fix_line,
-                        "prompt":format_bug_method
-                    }
-                )
+                self.data_process(idx, bug_method, bug_line, fix_line)
                 idx += 1
     
+    def data_process(self, idx, bug_method, bug_line, fix_line):
+        if self.model_name=="CodeT5":
+            bug_method_list = bug_method.split('\n')
+            for ind in range(len(bug_method_list)):
+                if bug_line in bug_method_list[ind]:
+                    bug_method_list[ind] = " <BUGS> " + bug_line + " <BUGE> "
+            format_bug_method = '\n'.join(bug_method_list)
+            format_bug_method = re.sub(r'\s+', ' ', format_bug_method)
+            format_bug_method = format_bug_method.replace('</s>', '<unk>')
+
+            format_fix_line= re.sub(r'\s+', ' ', " <FIXS> " + fix_line.strip() + " <FIXE> ")
+            format_fix_line = format_fix_line.replace('</s>', '<unk>')
+            self.data.append(
+                {   
+                    "idx":idx,
+                    "bug_method":format_bug_method.strip(),
+                    "bug_line":bug_line,
+                    "fix_line":format_fix_line,
+                    "prompt":format_bug_method
+                }
+            )
+        else:
+            self.data.append(
+                    {   
+                        "idx":idx,
+                        "bug_method":bug_method,
+                        "bug_line":bug_line,
+                        "fix_line":fix_line,
+                    }
+                )
+
+        
+
+
+
     def gen_prompt(self):
-        pass
+        if self.model_name =="CodeT5":
+            pass 
+        else:
+            # todo gen prompt
+            pass
 
     def tokenize_data(self):
-        for data in self.data:
-            input_ids = self.tokenizer.encode(data["bug_method"], max_length=512, padding='max_length', 
-                                              truncation=True, return_tensors="pt")
-            target_ids = self.tokenizer.encode(data["fix_line"], max_length=256, padding='max_length', 
-                                               truncation=True, return_tensors="pt")
-            input_mask = input_ids.ne(self.tokenizer.pad_token_id)
-            target_mask = target_ids.ne(self.tokenizer.pad_token_id)
-            data["input_ids"] = input_ids
-            data["target_ids"] = target_ids
-            data["input_mask"] = input_mask
-            data["target_mask"] = target_mask
+        if self.model_name =="CodeT5":
+            for data in self.data:
+                input_ids = self.tokenizer.encode(data["bug_method"], max_length=512, padding='max_length', 
+                                                truncation=True, return_tensors="pt")
+                target_ids = self.tokenizer.encode(data["fix_line"], max_length=256, padding='max_length', 
+                                                truncation=True, return_tensors="pt")
+                input_mask = input_ids.ne(self.tokenizer.pad_token_id)
+                target_mask = target_ids.ne(self.tokenizer.pad_token_id)
+                data["input_ids"] = input_ids
+                data["target_ids"] = target_ids
+                data["input_mask"] = input_mask
+                data["target_mask"] = target_mask
+        else:
+            pass

@@ -6,6 +6,7 @@ from huggingface_hub import snapshot_download
 
 codet5_model_name = "Salesforce/codet5-base"
 qwen25_coder_3b_model_name = "Qwen/Qwen2.5-Coder-3B"
+qwen25_coder_3b_instruct_model_name = "Qwen/Qwen2.5-Coder-3B-Instruct"
 def download_llm_model(model_name: str = None, save_directory: str = None):
     model_short_name = model_name.split('/')[-1]
     if save_directory is None:
@@ -32,4 +33,4 @@ def download_llm_model(model_name: str = None, save_directory: str = None):
 
 if __name__ == "__main__":
     # Download the model to the default location
-    download_llm_model(model_name=codet5_model_name, save_directory="D://LLM//CodeT5")
+    download_llm_model(model_name=qwen25_coder_3b_instruct_model_name, save_directory="D://LLM//Qwen2.5-Coder-3B-Instruct")
