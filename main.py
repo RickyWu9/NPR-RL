@@ -31,12 +31,11 @@ if __name__ == '__main__':
     # reward formula计算模型
     parser.add_argument("--reward_formula_model_dir_path", type=str, default="D://LLM//codebert-base")
     # 是否微调模型
-    parser.add_argument("--is_finetune", type=bool, default=False)
+    parser.add_argument("--is_finetune", action='store_true', default=False)
     # 是否开启测试
-    parser.add_argument("--is_test", type=bool, default=True)
+    parser.add_argument("--is_test", action='store_true', default=False)
     args = parser.parse_args()
-    logger.info(args)
-
+    print(f"agrs: {args}")
     # 加载模型
     model_config = ModelConfig(args.model_name, args.model_dir_path, args.param_file_path, args.is_finetune)
     model, tokenizer = model_config.load_model()

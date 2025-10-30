@@ -1,4 +1,4 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch 
 
 
@@ -19,7 +19,7 @@ class ModelConfig():
             model = T5ForConditionalGeneration.from_pretrained(self.model_dir_path)
         else:
             tokenizer = AutoTokenizer.from_pretrained(self.model_dir_path)
-            model = AutoModelForSeq2SeqLM.from_pretrained(self.model_dir_path)
+            model = AutoModelForCausalLM.from_pretrained(self.model_dir_path)
         
         # 加载模型参数
         if self.param_file_path is not None:
@@ -32,7 +32,8 @@ class ModelConfig():
                 r=16,
                 lora_alpha=32,
                 lora_dropout=0.1,
-                target_modules=["q", "k", "v", "o"],
+                use_dora=True,
+                task_type="CAUSAL_LM",
             )
             model = get_peft_model(model, config)
         self.model = model

@@ -15,8 +15,8 @@ class DataConfig():
         self.is_test = is_test 
         self.data_type = data_type
         self.test_number = test_number
-        self.raw_data = None
-        self.dataset = None
+        self.data = None
+        self.dataset: RLDataset = None
 
     def load_dataset(self):
         print("Loading data......")
@@ -104,7 +104,23 @@ class DataConfig():
             pass 
         else:
             # todo gen prompt
-            pass
+            system_txt = "You are a code repair assistant."
+            "Your task is to modify bug line to fix line from a bug method given by user.Your reply only contains a fix line. "
+            "Don't give any other useless info!!! Don't give analysis or explanation!!! Just give an anwser!!! Just give a code!!!"
+            "Your reply is just the fix line code. Don't reply any others words!!! Give a brief anwser!!!"
+            for data in self.data:
+                bug_method = data["bug_method"]
+                bug_line = data["bug_line"]
+                prompt_txt = f"The bug method is below:\n{bug_method}\n"
+                f"The bug line is below:\n{bug_line}"
+                prompt = [{
+                    "role":"system",
+                    "content":system_txt
+                }, {
+                    "role":"user",
+                    "content":prompt_txt
+                }]
+                data["prompt"] = prompt
 
     def tokenize_data(self):
         if self.model_name =="CodeT5":

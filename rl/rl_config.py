@@ -24,24 +24,24 @@ class RLConfig():
                 learning_rate=1e-5,
                 lr_scheduler_type="cosine",
                 warmup_ratio=0.03,
-                logging_steps=10,
-                max_steps=5000,
+                logging_steps=1,
+                max_steps=3,
                 per_device_train_batch_size=4,
                 gradient_accumulation_steps=1,
                 save_strategy="steps",
-                save_steps=100,
+                save_steps=1,
                 per_device_eval_batch_size=4,
       
                 # train specific parameters
-                max_prompt_length=512,
-                max_completion_length=256,
+                max_prompt_length=256,
+                max_completion_length=128,
                 num_generations=4,
                 beta=1e-3,
                 fp16=True,  # 启用混合精度训练以加速和节省内存
                 gradient_checkpointing=False,
                 deepspeed=None,  # 可以设置为deepspeed配置文件路径
             )
-
+            FormulaScore.bert_score_model_dir_path = self.reward_formula_model_dir_path
             self.trainer = GRPOTrainer(
                 model=self.model_config.model,
                 reward_funcs=[FormulaScore.compute_reward],

@@ -181,7 +181,7 @@ dependencies:
       - tree-sitter==0.22.3
       - tree-sitter-java==0.21.0
       - triton==3.2.0
-      - trl==0.23.0
+      - trl==0.21.0
       - typing-extensions==4.15.0
       - typing-inspection==0.4.2
       - tzdata==2025.2
