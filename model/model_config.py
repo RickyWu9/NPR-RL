@@ -30,9 +30,10 @@ class ModelConfig():
             from peft import get_peft_model, LoraConfig 
             config = LoraConfig(
                 r=16,
-                lora_alpha=32,
+                lora_alpha=8,
                 lora_dropout=0.1,
                 use_dora=True,
+                target_modules=["q_proj", "k_proj", "v_proj"],
                 task_type="CAUSAL_LM",
             )
             model = get_peft_model(model, config)

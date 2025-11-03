@@ -1,16 +1,20 @@
+project_root_dir="/root/wy/NPR-RL"
 model_name="Qwen25-coder-ins"
-model_dir_path="/home/wuyi/wy/NPR-RL/assets/model/qwen25_ins"
-data_dir="/home/wuyi/wy/NPR-RL/assets/Train"
-output_dir="/home/wuyi/wy/NPR-RL/assets/output/qwen25_ins"
-log_dir="/home/wuyi/wy/NPR-RL/assets/log/qwen3_ins"
-rl_type="trl_grpo"
-reward_formula_model_dir_path="/home/wuyi/wy/NPR-RL/assets/model/codebert_base"
+model_dir_path="$project_root_dir/assets/model/qwen25_ins"
 
-cd /home/wuyi/wy/NPR-RL
+v100_gpu_train_data_dir="/root/wzy/NprRF-main/Generator/CodeBert/Train_Data/Train"
+v100_gpu_valid_data_dir="/root/wzy/NprRF-main/Generator/CodeBert/Train_Data/Valid"
+data_dir="$project_root_dir/assets/Train"
+output_dir="$project_root_dir/assets/output/qwen25_ins"
+log_dir="$project_root_dir/assets/log/qwen25_ins"
+rl_type="trl_grpo"
+reward_formula_model_dir_path="$project_root_dir/assets/model/codebert_base"
+
+cd $project_root_dir
 python -m main \
     --model_name $model_name \
     --model_dir_path $model_dir_path \
-    --data_dir $data_dir \
+    --data_dir $v100_gpu_train_data_dir \
     --output_dir $output_dir \
     --log_dir $log_dir \
     --rl_type $rl_type \

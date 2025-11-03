@@ -34,6 +34,9 @@ if __name__ == '__main__':
     parser.add_argument("--is_finetune", action='store_true', default=False)
     # 是否开启测试
     parser.add_argument("--is_test", action='store_true', default=False)
+    # 是否开启deepspeed
+    parser.add_argument("--is_deepspeed", action='store_true', default=False)
+
     args = parser.parse_args()
     print(f"agrs: {args}")
     # 加载模型
@@ -45,7 +48,11 @@ if __name__ == '__main__':
     dataset = data_config.load_dataset()
 
     # 加载rl模块
-    rl_config = RLConfig(model_config, data_config, args.rl_type, args.output_dir, args.log_dir, args.reward_formula_model_dir_path)
+    rl_config = RLConfig(
+        model_config, data_config, 
+        args.rl_type, args.output_dir, args.log_dir, args.reward_formula_model_dir_path,
+        is_deepspeed=args.is_deepspeed
+    )
 
     # 开始训练
     rl_config.train()  

@@ -5,7 +5,7 @@ from data.data_config import DataConfig
 from reward.formula_score import FormulaScore
 class RLConfig():
     def __init__(self, model_config: ModelConfig, data_config: DataConfig, 
-                 rl_type, output_dir, log_dir, reward_formula_model_dir_path=None) -> None:
+                 rl_type, output_dir, log_dir, reward_formula_model_dir_path=None, **kwargs) -> None:
         self.model_config = model_config
         self.data_config = data_config
         self.rl_type = rl_type
@@ -13,6 +13,7 @@ class RLConfig():
         self.log_dir = log_dir
         self.reward_formula_model_dir_path = reward_formula_model_dir_path
         self.train_config = None
+        self.is_deepspeed = kwargs.get("is_deepspeed", False)
         self.load_config()
 
     def load_config(self):
@@ -38,7 +39,7 @@ class RLConfig():
                 num_generations=4,
                 beta=1e-3,
                 fp16=True,  # 启用混合精度训练以加速和节省内存
-                gradient_checkpointing=False,
+                gradient_checkpointing=True,
                 deepspeed=None,  # 可以设置为deepspeed配置文件路径
             )
             FormulaScore.bert_score_model_dir_path = self.reward_formula_model_dir_path

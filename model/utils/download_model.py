@@ -34,8 +34,8 @@ def download_llm_model(model_name: str = None, save_directory: str = None):
 if __name__ == "__main__":
     # Download the model to the default location
     download_llm_model(
-        model_name=codebert_base_model_name, 
-        save_directory="/home/wuyi/wy/NPR-RL/assets/model/codebert_base"
+        model_name=qwen25_coder_3b_instruct_model_name, 
+        save_directory="/root/wy/NPR-RL/assets/model/qwen25_ins"
     )
 
     
