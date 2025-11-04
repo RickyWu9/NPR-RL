@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument("--local_rank", type=int, default=-1)
     # 模型名称
     parser.add_argument("--model_name", type=str, default="CodeT5")
     # base模型文件夹地址
@@ -40,7 +41,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(f"agrs: {args}")
     # 加载模型
-    model_config = ModelConfig(args.model_name, args.model_dir_path, args.param_file_path, args.is_finetune)
+    model_config = ModelConfig(
+        args.model_name, args.model_dir_path, args.param_file_path, 
+        args.is_finetune, is_deepspeed=args.is_deepspeed
+    )
     model, tokenizer = model_config.load_model()
 
     # 加载数据
@@ -56,4 +60,4 @@ if __name__ == '__main__':
 
     # 开始训练
     rl_config.train()  
-    rl_config.save_model("last_checkpoint.bin")
+    rl_config.save_model(args.output_dir + "/last_checkpoint")

@@ -9,15 +9,32 @@ output_dir="$project_root_dir/assets/output/qwen25_ins"
 log_dir="$project_root_dir/assets/log/qwen25_ins"
 rl_type="trl_grpo"
 reward_formula_model_dir_path="$project_root_dir/assets/model/codebert_base"
+is_deepspeed=True
 
 cd $project_root_dir
-python -m main \
-    --model_name $model_name \
-    --model_dir_path $model_dir_path \
-    --data_dir $v100_gpu_train_data_dir \
-    --output_dir $output_dir \
-    --log_dir $log_dir \
-    --rl_type $rl_type \
-    --reward_formula_model_dir_path $reward_formula_model_dir_path \
-    --is_finetune \
-    --is_test \
+
+if [[ "$is_deepspeed" == "True" ]]; then
+    echo "use deepspeed"
+    deepspeed --num_gpus=2 main.py \
+        --model_name $model_name \
+        --model_dir_path $model_dir_path \
+        --data_dir $v100_gpu_train_data_dir \
+        --output_dir $output_dir \
+        --log_dir $log_dir \
+        --rl_type $rl_type \
+        --reward_formula_model_dir_path $reward_formula_model_dir_path \
+        --is_finetune \
+        --is_test \
+        --is_deepspeed
+else
+    python -m main \
+        --model_name $model_name \
+        --model_dir_path $model_dir_path \
+        --data_dir $v100_gpu_train_data_dir \
+        --output_dir $output_dir \
+        --log_dir $log_dir \
+        --rl_type $rl_type \
+        --reward_formula_model_dir_path $reward_formula_model_dir_path \
+        --is_finetune \
+        --is_test
+fi

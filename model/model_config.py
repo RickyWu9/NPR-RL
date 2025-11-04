@@ -3,13 +3,14 @@ import torch
 
 
 class ModelConfig():
-    def __init__(self, model_name, model_dir_path, param_file_path = None, is_finetune = False):
+    def __init__(self, model_name, model_dir_path, param_file_path = None, is_finetune = False, **kwargs):
         self.model_name = model_name
         self.model_dir_path = model_dir_path
         self.param_file_path = param_file_path
         self.is_finetune = is_finetune
         self.model = None 
         self.tokenizer = None
+        self.is_deepspeed = kwargs.get("is_deepspeed", False)
 
     def load_model(self):
         print("Loading model......")
@@ -19,7 +20,10 @@ class ModelConfig():
             model = T5ForConditionalGeneration.from_pretrained(self.model_dir_path)
         else:
             tokenizer = AutoTokenizer.from_pretrained(self.model_dir_path)
-            model = AutoModelForCausalLM.from_pretrained(self.model_dir_path)
+            if self.is_deepspeed:
+                model = AutoModelForCausalLM.from_pretrained(self.model_dir_path)
+            else:
+                model = AutoModelForCausalLM.from_pretrained(self.model_dir_path, device_map="auto")
         
         # 加载模型参数
         if self.param_file_path is not None:
