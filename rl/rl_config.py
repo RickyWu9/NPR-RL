@@ -22,8 +22,8 @@ class RLConfig():
         if self.is_deepspeed:
             self.deepspeed_config = {
                 "train_batch_size": 'auto',                 # 全局批次大小
-                "gradient_accumulation_step": 16,
-                "micro_batch_per_gpu": 16,
+                "train_micro_batch_size_per_gpu":'auto',
+                "gradient_accumulation_steps": 'auto',
                 "zero_optimization": {
                 "stage": 3,                           # ZeRO Stage 3（参数/梯度/优化器状态分片）
                 "offload_optimizer": {
@@ -66,9 +66,9 @@ class RLConfig():
                 #num_train_epochs=1,
                 max_steps=16,
                 per_device_train_batch_size=16,
-                gradient_accumulation_steps=16,
+                gradient_accumulation_steps=4,
                 save_strategy="steps",
-                save_steps=16,
+                save_steps=100,
                 per_device_eval_batch_size=4,
       
                 # train specific parameters

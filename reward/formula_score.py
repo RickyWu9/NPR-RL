@@ -1,6 +1,6 @@
 from codebleu import calc_codebleu
 import code_bert_score
-
+import re
 
 class FormulaScore(object):
     bert_score_model_dir_path = None
@@ -18,7 +18,8 @@ class FormulaScore(object):
             codebleu = result["codebleu"]
         else:
             codebleu = result["ngram_match_score"]*0.3 + result["weighted_ngram_match_score"]*0.3 + result["syntax_match_score"]*0.4
-
+        print(f"prediction: {prediction}")
+        print(f"reference: {reference}")
         bert_score_rp = code_bert_score.score(cands=[prediction], refs=[reference], lang='java', model_type=model_path)[2].item()
         bert_score_bp = code_bert_score.score(cands=[prediction], refs=[buggy], lang='java', model_type=model_path)[2].item()
         return codebleu+bert_score_rp-bert_score_bp
@@ -33,6 +34,7 @@ class FormulaScore(object):
         fix_line = kwargs.get('fix_line', '')
         bug_line = kwargs.get('bug_line', '')
         model_path = kwargs.get('reward_model','')
+
         # pre process
         if model_path is None or len(model_path)<=0:
             model_path = FormulaScore.bert_score_model_dir_path
@@ -47,6 +49,12 @@ class FormulaScore(object):
         for completion in completions:
             if isinstance(completion, list):
                 completion = completion[0]["content"]
+            completion = FormulaScore.extract_fix_code(completion)
+            print(f"completion: {completion}\n--------------------")
+            if completion is None:
+                rewards.append(-10)
+                continue
+            
             ref = bug_method.split('\n')
             pre = bug_method.split('\n')
             for ind in range(len(ref)):
@@ -60,6 +68,15 @@ class FormulaScore(object):
             rewards.append(score)
         print(f"rewards: {rewards}")
         return rewards
+    
+    @staticmethod
+    def extract_fix_code(completion):
+        pattern = re.compile(r"```java\n(.*?)\n```", re.DOTALL)
+        matches = pattern.findall(completion)
+        if len(matches) > 0:
+            return matches[0].strip()
+        else:
+            return None
     
 
 

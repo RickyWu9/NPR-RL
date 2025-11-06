@@ -8,7 +8,7 @@ from data.rl_data_process import read_file
 
 
 class DataConfig():
-    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=16):
+    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=160):
         self.data_dir = data_dir
         self.model_name = model_config.model_name
         self.tokenizer = model_config.tokenizer
@@ -105,15 +105,11 @@ class DataConfig():
             pass 
         else:
             # todo gen prompt
-            system_txt = "You are a code repair assistant."
-            "Your task is to modify bug line to fix line from a bug method given by user.Your reply only contains a fix line. "
-            "Don't give any other useless info!!! Don't give analysis or explanation!!! Just give an anwser!!! Just give a code!!!"
-            "Your reply is just the fix line code. Don't reply any others words!!! Give a brief anwser!!!"
+            system_txt = "You are a code repair assistant. Your task is to modify bug line to fix line from a bug method given by user.Your reply only contains a fix line. "
             for data in self.data:
                 bug_method = data["bug_method"]
                 bug_line = data["bug_line"]
-                prompt_txt = f"The bug method is below:\n{bug_method}\n"
-                f"The bug line is below:\n{bug_line}"
+                prompt_txt = f"The bug method is below:\n```java\n{bug_method}\n```\nThe bug line is below:\n```java\n{bug_line}\n```\nThe fix code should be enclosed in ```java ``` tags."
                 prompt = [{
                     "role":"system",
                     "content":system_txt

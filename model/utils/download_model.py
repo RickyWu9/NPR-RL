@@ -4,6 +4,7 @@ Download models from Hugging Face Hub
 import os
 from huggingface_hub import snapshot_download
 codebert_base_model_name = "microsoft/codebert-base"
+codebert_java = "neulab/codebert-java"
 codet5_model_name = "Salesforce/codet5-base"
 qwen25_coder_3b_model_name = "Qwen/Qwen2.5-Coder-3B"
 qwen25_coder_3b_instruct_model_name = "Qwen/Qwen2.5-Coder-3B-Instruct"
@@ -34,8 +35,8 @@ def download_llm_model(model_name: str = None, save_directory: str = None):
 if __name__ == "__main__":
     # Download the model to the default location
     download_llm_model(
-        model_name=qwen25_coder_3b_instruct_model_name, 
-        save_directory="/root/wy/NPR-RL/assets/model/qwen25_ins"
+        model_name=codebert_java, 
+        save_directory="/root/wy/NPR-RL/assets/model/codebert_java"
     )
 
     
