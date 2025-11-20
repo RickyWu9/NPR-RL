@@ -35,10 +35,7 @@ class RLConfig():
                 "contiguous_gradients": True
                 },
                 "zero_optimization": {
-                    "stage": 3,
-                    "stage3_gather_16bit_weights_on_model_save": True,
-                    "stage3_prefetch_bucket_size": 0.94e6,
-                    "stage3_max_live_parameters": 1e9
+                    "stage": 0
                 },
                 "fp16": {
                     "enabled": True
@@ -81,6 +78,7 @@ class RLConfig():
                 deepspeed=self.deepspeed_config,  # 可以设置为deepspeed配置文件路径
             )
             FormulaScore.bert_score_model_dir_path = self.reward_formula_model_dir_path
+            from rl.log_callback import CustomLogCallback
             self.trainer = GRPOTrainer(
                 model=self.model_config.model,
                 reward_funcs=[FormulaScore.compute_reward],
@@ -88,6 +86,7 @@ class RLConfig():
                 train_dataset=self.data_config.dataset,
                 #processing_class=self.model_config.tokenizer,
                 processing_class=self.model_config.tokenizer,
+                callbacks=[CustomLogCallback]
             )
         elif self.rl_type =="grpo":
             from rl.grpo_train import GRPOTrainer

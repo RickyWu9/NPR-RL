@@ -18,10 +18,11 @@ class FormulaScore(object):
             codebleu = result["codebleu"]
         else:
             codebleu = result["ngram_match_score"]*0.3 + result["weighted_ngram_match_score"]*0.3 + result["syntax_match_score"]*0.4
-        print(f"prediction: {prediction}")
-        print(f"reference: {reference}")
-        bert_score_rp = code_bert_score.score(cands=[prediction], refs=[reference], lang='java', model_type=model_path)[2].item()
-        bert_score_bp = code_bert_score.score(cands=[prediction], refs=[buggy], lang='java', model_type=model_path)[2].item()
+        # print(f"prediction: {prediction}")
+        # print(f"reference: {reference}")
+        # print(f"model_type: {model_path}")
+        bert_score_rp = code_bert_score.score(cands=[prediction], refs=[reference], lang='java', model_type=model_path, device='cuda')[2].item()
+        bert_score_bp = code_bert_score.score(cands=[prediction], refs=[buggy], lang='java', model_type=model_path, device='cuda')[2].item()
         return codebleu+bert_score_rp-bert_score_bp
         #return codebleu
 
@@ -50,7 +51,7 @@ class FormulaScore(object):
             if isinstance(completion, list):
                 completion = completion[0]["content"]
             completion = FormulaScore.extract_fix_code(completion)
-            print(f"completion: {completion}\n--------------------")
+            # print(f"completion: {completion}\n--------------------")
             if completion is None:
                 rewards.append(-10)
                 continue
