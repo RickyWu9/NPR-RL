@@ -67,7 +67,7 @@ class FormulaScore(object):
             prediction = '\n'.join(pre)
             score = FormulaScore.get_score(bug_method, reference, prediction, model_name_or_path = model_path)
             rewards.append(score)
-        print(f"rewards: {rewards}")
+        #print(f"rewards: {rewards}")
         return rewards
     
     @staticmethod
@@ -93,3 +93,23 @@ class RewardSmoother:
         else:
             self.last_reward = self.reward_smooth_alpha * self.last_reward + (1 - self.reward_smooth_alpha) * reward
         return self.last_reward
+    
+calc_codebleu_score = 0
+code_bert_score_r1 = 0
+code_bert_score_r2 = 0
+
+def get_score(output):
+    if satisfy_format(output):
+        score = calc_codebleu_score + code_bert_score_r1 - code_bert_score_r2
+    else:
+        score = -10
+
+    return score
+
+def satisfy_format(output):
+    pattern = re.compile(r"```java\n(.*?)\n```", re.DOTALL)
+    matches = pattern.findall(output)
+    if len(matches) > 0:
+        return True
+    else:
+        return False

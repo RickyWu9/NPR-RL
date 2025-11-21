@@ -8,7 +8,7 @@ from data.rl_data_process import read_file
 
 
 class DataConfig():
-    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=32):
+    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=32000):
         self.data_dir = data_dir
         self.model_name = model_config.model_name
         self.tokenizer = model_config.tokenizer
