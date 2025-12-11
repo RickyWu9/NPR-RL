@@ -8,13 +8,14 @@ from data.rl_data_process import read_file
 
 
 class DataConfig():
-    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", test_number=32000):
+    def __init__(self, data_dir, model_config : ModelConfig, is_test, data_type="train", **kwargs):
         self.data_dir = data_dir
         self.model_name = model_config.model_name
         self.tokenizer = model_config.tokenizer
         self.is_test = is_test 
         self.data_type = data_type
-        self.test_number = test_number
+        self.test_number = kwargs.get('test_number', 32)
+        self.train_start_idx = kwargs.get('train_start_idx', 0)
         self.data = None
         self.dataset: RLDataset = None
 
@@ -49,7 +50,10 @@ class DataConfig():
             filename_list = read_file(data_ids_file)
             print("total number of data:", len(filename_list))
             if self.is_test:
-                filename_list = filename_list[:self.test_number]
+                filename_list = filename_list[self.train_start_idx:self.train_start_idx+self.test_number]
+            else:
+                filename_list = filename_list[self.train_start_idx:]
+            print(f"start train from {self.train_start_idx}")
             print("train number of data:", len(filename_list))
             # 通过索引读取数据
             self.data = []

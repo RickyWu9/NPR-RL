@@ -27,45 +27,48 @@ class FormulaScore(object):
         #return codebleu
 
     @staticmethod
-    def compute_reward(completions, **kwargs):
+    def compute_reward(completions, bug_method, fix_line, bug_line, **kwargs):
         rewards = []
         # 从kwargs中获取参数
-        
-        bug_method = kwargs.get('bug_method', '')
-        fix_line = kwargs.get('fix_line', '')
-        bug_line = kwargs.get('bug_line', '')
         model_path = kwargs.get('reward_model','')
 
         # pre process
         if model_path is None or len(model_path)<=0:
             model_path = FormulaScore.bert_score_model_dir_path
-        if isinstance(bug_method, list):
-            bug_method = bug_method[0]
-        if isinstance(fix_line, list):
-            fix_line = fix_line[0]
-        if isinstance(bug_line, list):
-            bug_line = bug_line[0]
 
+        
+
+        #print(f"completions len: {len(completions)}")
         # 遍历每个生成的修复代码，计算奖励分数
-        for completion in completions:
+        for completion, bug_method_str, fix_line_str, bug_line_str in zip(completions, bug_method, fix_line, bug_line):
+            #预处理
             if isinstance(completion, list):
                 completion = completion[0]["content"]
+            if isinstance(bug_method_str, list):
+                bug_method_str = bug_method_str[0]
+            if isinstance(fix_line_str, list):
+                fix_line_str = fix_line_str[0]
+            if isinstance(bug_line_str, list):
+                bug_line_str = bug_line_str[0]
+            
+
             completion = FormulaScore.extract_fix_code(completion)
-            # print(f"completion: {completion}\n--------------------")
+            #print(f"fix_line_str: {fix_line_str}")
+            #print(f"completion: {completion}\n--------------------")
             if completion is None:
-                rewards.append(-10)
+                rewards.append(-1)
                 continue
             
-            ref = bug_method.split('\n')
-            pre = bug_method.split('\n')
+            ref = bug_method_str.split('\n')
+            pre = bug_method_str.split('\n')
             for ind in range(len(ref)):
-                if bug_line in ref[ind]:
-                    ref[ind] = fix_line
+                if bug_line_str in ref[ind]:
+                    ref[ind] = fix_line_str
                     pre[ind] = completion
             
             reference = '\n'.join(ref)
             prediction = '\n'.join(pre)
-            score = FormulaScore.get_score(bug_method, reference, prediction, model_name_or_path = model_path)
+            score = FormulaScore.get_score(bug_method_str, reference, prediction, model_name_or_path = model_path)
             rewards.append(score)
         #print(f"rewards: {rewards}")
         return rewards

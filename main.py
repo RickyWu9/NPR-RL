@@ -35,6 +35,10 @@ if __name__ == '__main__':
     parser.add_argument("--is_finetune", action='store_true', default=False)
     # 是否开启测试
     parser.add_argument("--is_test", action='store_true', default=False)
+    # 测试数量
+    parser.add_argument("--test_number", type=int, default=32)
+    # 训练开始位置
+    parser.add_argument("--train_start_idx", type=int, default=0)
     # 是否开启deepspeed
     parser.add_argument("--is_deepspeed", action='store_true', default=False)
 
@@ -48,7 +52,10 @@ if __name__ == '__main__':
     model, tokenizer = model_config.load_model()
 
     # 加载数据
-    data_config = DataConfig(args.data_dir, model_config, args.is_test)
+    data_config = DataConfig(
+        args.data_dir, model_config, args.is_test, 
+        test_number=args.test_number, train_start_idx=args.train_start_idx
+    )
     dataset = data_config.load_dataset()
 
     # 加载rl模块
@@ -60,4 +67,4 @@ if __name__ == '__main__':
 
     # 开始训练
     rl_config.train()  
-    rl_config.save_model(args.output_dir + "/last_checkpoint")
+    #rl_config.save_model(args.output_dir + "/last_checkpoint")

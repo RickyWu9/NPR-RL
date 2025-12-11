@@ -13,7 +13,7 @@ class ModelConfig():
         self.is_deepspeed = kwargs.get("is_deepspeed", False)
 
     def load_model(self):
-        print("Loading model......")
+        print(f"Loading model from {self.model_dir_path}......")
         if self.model_name == "CodeT5":
             from transformers import T5ForConditionalGeneration, RobertaTokenizer
             tokenizer = RobertaTokenizer.from_pretrained(self.model_dir_path)
